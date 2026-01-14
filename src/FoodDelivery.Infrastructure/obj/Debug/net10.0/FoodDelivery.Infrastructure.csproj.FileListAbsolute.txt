@@ -1,0 +1,17 @@
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\bin\Debug\net10.0\FoodDelivery.Infrastructure.deps.json
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\bin\Debug\net10.0\FoodDelivery.Infrastructure.dll
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\bin\Debug\net10.0\FoodDelivery.Infrastructure.pdb
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\bin\Debug\net10.0\FoodDelivery.Application.dll
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\bin\Debug\net10.0\FoodDelivery.Domain.dll
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\bin\Debug\net10.0\FoodDelivery.Domain.pdb
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\bin\Debug\net10.0\FoodDelivery.Application.pdb
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\FoodDelivery.Infrastructure.csproj.AssemblyReference.cache
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\FoodDelivery.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\FoodDelivery.Infrastructure.AssemblyInfoInputs.cache
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\FoodDelivery.Infrastructure.AssemblyInfo.cs
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\FoodDelivery.Infrastructure.csproj.CoreCompileInputs.cache
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\FoodDeli.7752ACBA.Up2Date
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\FoodDelivery.Infrastructure.dll
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\refint\FoodDelivery.Infrastructure.dll
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\FoodDelivery.Infrastructure.pdb
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Infrastructure\obj\Debug\net10.0\ref\FoodDelivery.Infrastructure.dll

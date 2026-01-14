@@ -1,2 +1,5 @@
 # Visual Studio
 .vs/
+# .NET build output
+bin/
+obj/
