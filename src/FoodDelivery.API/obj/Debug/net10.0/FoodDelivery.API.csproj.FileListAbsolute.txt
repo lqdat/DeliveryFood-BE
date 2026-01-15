@@ -194,3 +194,5 @@ D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.API\obj\Debug\net10.
 D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.API\obj\Debug\net10.0\FoodDelivery.API.pdb
 D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.API\obj\Debug\net10.0\FoodDelivery.API.genruntimeconfig.cache
 D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.API\obj\Debug\net10.0\ref\FoodDelivery.API.dll
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.API\obj\Debug\net10.0\FoodDelivery.API.sourcelink.json
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

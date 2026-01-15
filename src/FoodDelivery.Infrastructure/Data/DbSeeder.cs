@@ -46,7 +46,19 @@ public static class DbSeeder
             AvatarUrl = "https://randomuser.me/api/portraits/men/3.jpg"
         };
 
-        context.Users.AddRange(customerUser, merchantUser, driverUser);
+        // Admin user for testing Admin screens
+        var adminUser = new User
+        {
+            Id = Guid.NewGuid(),
+            PhoneNumber = "0900000000",
+            Email = "admin@example.com",
+            FullName = "Quản Trị Viên",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+            Role = UserRole.Admin,
+            AvatarUrl = "https://randomuser.me/api/portraits/men/4.jpg"
+        };
+
+        context.Users.AddRange(customerUser, merchantUser, driverUser, adminUser);
 
         // Create Customer profile
         var customer = new Customer

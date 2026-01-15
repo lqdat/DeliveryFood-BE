@@ -13,3 +13,4 @@ D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Application\obj\Debu
 D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Application\obj\Debug\net10.0\refint\FoodDelivery.Application.dll
 D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Application\obj\Debug\net10.0\FoodDelivery.Application.pdb
 D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Application\obj\Debug\net10.0\ref\FoodDelivery.Application.dll
+D:\Project-Me\Deliver Food\FoodDeliveryAPI\src\FoodDelivery.Application\obj\Debug\net10.0\FoodDelivery.Application.sourcelink.json
