@@ -67,6 +67,80 @@ namespace FoodDelivery.Infrastructure.Migrations
                     b.ToTable("Addresses");
                 });
 
+            modelBuilder.Entity("FoodDelivery.Domain.Entities.Cart", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("RestaurantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
+
+                    b.HasIndex("RestaurantId");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("FoodDelivery.Domain.Entities.CartItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MenuItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SelectedOptions")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("MenuItemId");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("FoodDelivery.Domain.Entities.ChatMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -143,6 +217,9 @@ namespace FoodDelivery.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -152,11 +229,26 @@ namespace FoodDelivery.Infrastructure.Migrations
                     b.Property<double?>("CurrentLongitude")
                         .HasColumnType("double precision");
 
+                    b.Property<string>("DriverLicenseUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("IdCardBackUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("IdCardFrontUrl")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -176,6 +268,9 @@ namespace FoodDelivery.Infrastructure.Migrations
 
                     b.Property<string>("VehiclePlate")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("VehicleRegistrationUrl")
                         .HasColumnType("text");
 
                     b.Property<string>("VehicleType")
@@ -383,7 +478,13 @@ namespace FoodDelivery.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("BusinessLicense")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BusinessLicenseUrl")
                         .HasColumnType("text");
 
                     b.Property<string>("BusinessName")
@@ -393,8 +494,20 @@ namespace FoodDelivery.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("FoodSafetyCertUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("IdCardFrontUrl")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -706,6 +819,9 @@ namespace FoodDelivery.Infrastructure.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -713,6 +829,9 @@ namespace FoodDelivery.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsOpen")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTrending")
                         .HasColumnType("boolean");
 
                     b.Property<double>("Latitude")
@@ -742,6 +861,9 @@ namespace FoodDelivery.Infrastructure.Migrations
 
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("TotalOrders")
+                        .HasColumnType("integer");
 
                     b.Property<int>("TotalReviews")
                         .HasColumnType("integer");
@@ -806,6 +928,35 @@ namespace FoodDelivery.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("FoodDelivery.Domain.Entities.SearchHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Keyword")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SearchHistories");
                 });
 
             modelBuilder.Entity("FoodDelivery.Domain.Entities.User", b =>
@@ -941,6 +1092,44 @@ namespace FoodDelivery.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("FoodDelivery.Domain.Entities.Cart", b =>
+                {
+                    b.HasOne("FoodDelivery.Domain.Entities.Customer", "Customer")
+                        .WithOne()
+                        .HasForeignKey("FoodDelivery.Domain.Entities.Cart", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoodDelivery.Domain.Entities.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Restaurant");
+                });
+
+            modelBuilder.Entity("FoodDelivery.Domain.Entities.CartItem", b =>
+                {
+                    b.HasOne("FoodDelivery.Domain.Entities.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoodDelivery.Domain.Entities.MenuItem", "MenuItem")
+                        .WithMany()
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("MenuItem");
                 });
 
             modelBuilder.Entity("FoodDelivery.Domain.Entities.ChatMessage", b =>
@@ -1132,6 +1321,22 @@ namespace FoodDelivery.Infrastructure.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("FoodDelivery.Domain.Entities.SearchHistory", b =>
+                {
+                    b.HasOne("FoodDelivery.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FoodDelivery.Domain.Entities.Cart", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("FoodDelivery.Domain.Entities.Customer", b =>

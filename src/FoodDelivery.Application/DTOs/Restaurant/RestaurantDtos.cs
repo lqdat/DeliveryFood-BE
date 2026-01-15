@@ -19,6 +19,8 @@ public class RestaurantDto
     public int TotalReviews { get; set; }
     public bool HasPromotion { get; set; }
     public bool IsNew { get; set; }
+    public bool IsTrending { get; set; }
+    public int TotalOrders { get; set; }
     public double Distance { get; set; } // Calculated field
 }
 

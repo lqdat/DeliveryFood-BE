@@ -130,20 +130,84 @@ public class DriversController : ControllerBase
             return BadRequest(ApiResponse<object>.ErrorResponse("Đơn hàng đã được nhận"));
 
         order.DriverId = driver.Id;
-        order.Status = OrderStatus.PickedUp;
+        // Status remains ReadyForPickup until driver actually picks it up
         driver.Status = DriverStatus.Busy;
 
         order.TrackingHistory.Add(new OrderTracking
         {
             OrderId = order.Id,
-            Status = OrderStatus.PickedUp,
-            Description = "Tài xế đã lấy hàng",
-            DescriptionSecondary = "Driver picked up order"
+            Status = order.Status,
+            Description = "Tài xế đã nhận đơn và đang đến quán",
+            DescriptionSecondary = "Driver accepted and is heading to restaurant"
         });
 
         await _context.SaveChangesAsync();
 
         return Ok(ApiResponse<object>.SuccessResponse(new { }, "Đã nhận đơn hàng!"));
+    }
+
+    [HttpPost("jobs/{orderId}/pickup")]
+    public async Task<ActionResult<ApiResponse<object>>> PickupOrder(Guid orderId)
+    {
+        var userId = GetUserId();
+        var driver = await _context.Drivers.FirstOrDefaultAsync(d => d.UserId == userId);
+        if (driver == null) return NotFound(ApiResponse<object>.ErrorResponse("Driver not found"));
+
+        var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId && o.DriverId == driver.Id);
+        if (order == null) return NotFound(ApiResponse<object>.ErrorResponse("Đơn hàng không tồn tại hoặc không thuộc về bạn"));
+
+        order.Status = OrderStatus.PickedUp;
+        order.TrackingHistory.Add(new OrderTracking
+        {
+            OrderId = order.Id,
+            Status = OrderStatus.PickedUp,
+            Description = "Tài xế đã lấy hàng và đang giao",
+            DescriptionSecondary = "Driver picked up food and is delivering"
+        });
+
+        await _context.SaveChangesAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(new { }, "Đã xác nhận lấy hàng"));
+    }
+
+    [HttpPost("jobs/{orderId}/deliver")]
+    public async Task<ActionResult<ApiResponse<object>>> DeliverOrder(Guid orderId)
+    {
+        var userId = GetUserId();
+        var driver = await _context.Drivers.FirstOrDefaultAsync(d => d.UserId == userId);
+        if (driver == null) return NotFound(ApiResponse<object>.ErrorResponse("Driver not found"));
+
+        var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId && o.DriverId == driver.Id);
+        if (order == null) return NotFound(ApiResponse<object>.ErrorResponse("Đơn hàng không tồn tại hoặc không thuộc về bạn"));
+
+        order.Status = OrderStatus.Delivered;
+        order.DeliveredAt = DateTime.UtcNow;
+        driver.Status = DriverStatus.Online;
+        driver.TotalDeliveries += 1;
+
+        // Add earnings
+        var earningAmount = Math.Round(order.TotalAmount * 0.15m + 10000, 0);
+        driver.WalletBalance += earningAmount;
+        _context.DriverEarnings.Add(new DriverEarning
+        {
+            Id = Guid.NewGuid(),
+            DriverId = driver.Id,
+            OrderId = order.Id,
+            Amount = earningAmount,
+            Type = EarningType.Delivery,
+            Description = $"Giao hàng đơn #{order.OrderNumber}",
+            EarnedAt = DateTime.UtcNow
+        });
+
+        order.TrackingHistory.Add(new OrderTracking
+        {
+            OrderId = order.Id,
+            Status = OrderStatus.Delivered,
+            Description = "Giao hàng thành công",
+            DescriptionSecondary = "Order delivered successfully"
+        });
+
+        await _context.SaveChangesAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(new { }, "Đã hoàn thành đơn hàng!"));
     }
 
     [HttpPost("jobs/{orderId}/decline")]
@@ -265,4 +329,23 @@ public class DriversController : ControllerBase
             }).ToList()
         };
     }
+    [HttpPost("location")]
+    public async Task<ActionResult<ApiResponse<object>>> UpdateLocation([FromBody] UpdateLocationDto dto)
+    {
+        var userId = GetUserId();
+        var driver = await _context.Drivers.FirstOrDefaultAsync(d => d.UserId == userId);
+
+        if (driver == null)
+            return NotFound(ApiResponse<object>.ErrorResponse("Driver not found"));
+
+        driver.CurrentLatitude = dto.Latitude;
+        driver.CurrentLongitude = dto.Longitude;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(ApiResponse<object>.SuccessResponse(new { }, "Đã cập nhật vị trí"));
+    }
+
+    public record UpdateLocationDto(double Latitude, double Longitude);
 }
+

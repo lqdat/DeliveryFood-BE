@@ -28,6 +28,10 @@ public class AppDbContext : DbContext
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<OrderTracking> OrderTrackings => Set<OrderTracking>();
     
+    // Cart
+    public DbSet<Cart> Carts => Set<Cart>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+    
     // Vouchers
     public DbSet<Voucher> Vouchers => Set<Voucher>();
 
@@ -37,6 +41,9 @@ public class AppDbContext : DbContext
 
     // Driver
     public DbSet<DriverEarning> DriverEarnings => Set<DriverEarning>();
+    
+    // Search
+    public DbSet<SearchHistory> SearchHistories => Set<SearchHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -138,11 +145,31 @@ public class AppDbContext : DbContext
             .HasForeignKey(ot => ot.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Order -> ChatMessage (1:N)
+        // Order -> ChatMessage (1:1)
         modelBuilder.Entity<ChatMessage>()
             .HasOne(cm => cm.Order)
             .WithMany(o => o.ChatMessages)
             .HasForeignKey(cm => cm.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Cart Configuration
+        modelBuilder.Entity<Cart>(entity =>
+        {
+            entity.HasOne(c => c.Customer)
+                .WithOne()
+                .HasForeignKey<Cart>(c => c.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(c => c.Restaurant)
+                .WithMany()
+                .HasForeignKey(c => c.RestaurantId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<CartItem>()
+            .HasOne(ci => ci.Cart)
+            .WithMany(c => c.Items)
+            .HasForeignKey(ci => ci.CartId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Order -> Review (1:1)
@@ -211,6 +238,19 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Voucher>()
             .Property(v => v.MinOrderAmount)
             .HasPrecision(18, 2);
+
+        modelBuilder.Entity<CartItem>()
+            .Property(ci => ci.UnitPrice)
+            .HasPrecision(18, 2);
+
+        // Search History
+        modelBuilder.Entity<SearchHistory>(entity =>
+        {
+            entity.HasOne(sh => sh.User)
+                .WithMany()
+                .HasForeignKey(sh => sh.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

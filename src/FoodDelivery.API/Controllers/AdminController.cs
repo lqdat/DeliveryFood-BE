@@ -77,43 +77,25 @@ public class AdminController : ControllerBase
                 o.Id,
                 o.OrderNumber,
                 Restaurant = o.Restaurant!.Name,
-                o.TotalAmount,
+                Amount = o.TotalAmount,
                 Status = o.Status.ToString(),
                 o.CreatedAt
             })
             .ToListAsync();
 
-        // Weekly chart data (last 7 days)
-        var weeklyChart = new List<object>();
-        for (int i = 6; i >= 0; i--)
-        {
-            var date = today.AddDays(-i);
-            var dayRevenue = await _context.Orders
-                .Where(o => o.CreatedAt.Date == date && o.Status == OrderStatus.Delivered)
-                .SumAsync(o => o.TotalAmount);
-
-            weeklyChart.Add(new
-            {
-                DayName = date.ToString("ddd"),
-                Date = date.ToString("yyyy-MM-dd"),
-                Revenue = dayRevenue
-            });
-        }
-
         return Ok(ApiResponse<object>.SuccessResponse(new
         {
-            TodayRevenue = todayRevenue,
-            WeeklyRevenue = weeklyRevenue,
-            MonthlyRevenue = monthlyRevenue,
-            ActiveOrders = activeOrders,
-            CompletedToday = completedToday,
-            PendingDrivers = pendingDrivers,
-            PendingMerchants = pendingMerchants,
-            TotalDrivers = totalDrivers,
-            TotalMerchants = totalMerchants,
-            TotalCustomers = totalCustomers,
-            RecentOrders = recentOrders,
-            WeeklyChart = weeklyChart
+            todayRevenue,
+            weeklyRevenue,
+            monthlyRevenue,
+            activeOrders,
+            completedToday,
+            pendingDrivers,
+            pendingMerchants,
+            totalDrivers,
+            totalMerchants,
+            totalCustomers,
+            recentOrders
         }));
     }
 
@@ -132,17 +114,17 @@ public class AdminController : ControllerBase
             .Select(d => new
             {
                 d.Id,
-                d.User!.FullName,
-                d.User.PhoneNumber,
+                Name = d.User!.FullName,
+                Phone = d.User.PhoneNumber,
                 d.User.Email,
-                d.User.AvatarUrl,
+                Avatar = d.User.AvatarUrl,
                 d.VehicleType,
                 d.VehicleBrand,
                 d.VehiclePlate,
-                d.IdCardFrontUrl,
-                d.IdCardBackUrl,
-                d.DriverLicenseUrl,
-                d.VehicleRegistrationUrl,
+                IdCardFront = d.IdCardFrontUrl,
+                IdCardBack = d.IdCardBackUrl,
+                DriverLicense = d.DriverLicenseUrl,
+                VehicleRegistration = d.VehicleRegistrationUrl,
                 SubmittedAt = d.CreatedAt
             })
             .ToListAsync();
@@ -205,8 +187,8 @@ public class AdminController : ControllerBase
             {
                 m.Id,
                 m.BusinessName,
-                m.User!.FullName,
-                m.User.PhoneNumber,
+                OwnerName = m.User!.FullName,
+                Phone = m.User.PhoneNumber,
                 m.User.Email,
                 Restaurant = m.Restaurants.Select(r => new
                 {
@@ -216,9 +198,9 @@ public class AdminController : ControllerBase
                     r.Address,
                     r.Category
                 }).FirstOrDefault(),
-                m.BusinessLicenseUrl,
-                m.FoodSafetyCertUrl,
-                m.IdCardFrontUrl,
+                BusinessLicense = m.BusinessLicenseUrl,
+                FoodSafetyCert = m.FoodSafetyCertUrl,
+                IdCardFront = m.IdCardFrontUrl,
                 SubmittedAt = m.CreatedAt
             })
             .ToListAsync();
@@ -319,9 +301,9 @@ public class AdminController : ControllerBase
             {
                 o.Id,
                 o.OrderNumber,
-                Restaurant = o.Restaurant!.Name,
-                Customer = o.Customer!.User!.FullName,
-                Driver = o.Driver != null ? o.Driver.User!.FullName : null,
+                Restaurant = new { o.Restaurant!.Id, o.Restaurant.Name, o.Restaurant.ImageUrl, o.Restaurant.Address },
+                Customer = new { Name = o.Customer!.User!.FullName, AvatarUrl = o.Customer.User.AvatarUrl },
+                Driver = o.Driver != null ? new { Name = o.Driver.User!.FullName, AvatarUrl = o.Driver.User.AvatarUrl } : null,
                 Status = o.Status.ToString(),
                 o.TotalAmount,
                 o.CreatedAt
@@ -370,14 +352,14 @@ public class AdminController : ControllerBase
             },
             Customer = new
             {
-                order.Customer!.User!.FullName,
-                order.Customer.User.PhoneNumber,
-                order.Customer.User.AvatarUrl
+                Name = order.Customer!.User!.FullName,
+                Phone = order.Customer.User.PhoneNumber,
+                AvatarUrl = order.Customer.User.AvatarUrl
             },
             Driver = order.Driver != null ? new
             {
-                order.Driver.User!.FullName,
-                order.Driver.User.PhoneNumber,
+                Name = order.Driver.User!.FullName,
+                Phone = order.Driver.User.PhoneNumber,
                 order.Driver.VehicleType,
                 order.Driver.VehiclePlate
             } : null,
@@ -557,31 +539,31 @@ public class AdminController : ControllerBase
             });
         }
 
+        // Orders by status
+        var ordersByStatus = await _context.Orders
+            .Where(o => o.CreatedAt >= startDate)
+            .GroupBy(o => o.Status)
+            .Select(g => new
+            {
+                Status = g.Key.ToString(),
+                Count = g.Count()
+            })
+            .ToListAsync();
+
         return Ok(ApiResponse<object>.SuccessResponse(new
         {
             Period = period,
-            Revenue = new
-            {
-                Total = totalRevenue,
-                Growth = revenueGrowth
-            },
-            Orders = new
-            {
-                Total = totalOrders,
-                Completed = completedOrders,
-                Cancelled = cancelledOrders,
-                CompletionRate = completionRate,
-                CancellationRate = cancellationRate
-            },
-            Users = new
-            {
-                NewCustomers = newCustomers,
-                ActiveDrivers = activeDrivers,
-                ActiveMerchants = activeMerchants
-            },
-            TopRestaurants = topRestaurantsResult,
-            TopDrivers = topDriversResult,
-            DailyChart = dailyChart
+            TotalRevenue = totalRevenue,
+            TotalOrders = totalOrders,
+            CompletedOrders = completedOrders,
+            CancelledOrders = cancelledOrders,
+            AverageOrderValue = totalOrders > 0 ? (double)totalRevenue / totalOrders : 0,
+            NewCustomers = newCustomers,
+            NewDrivers = await _context.Drivers.CountAsync(d => d.CreatedAt >= startDate),
+            NewMerchants = await _context.Merchants.CountAsync(m => m.CreatedAt >= startDate),
+            RevenueChart = dailyChart,
+            OrdersByStatus = ordersByStatus,
+            TopRestaurants = topRestaurantsResult
         }));
     }
 

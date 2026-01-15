@@ -21,6 +21,10 @@ public class RestaurantsController : ControllerBase
     public async Task<ActionResult<ApiResponse<PagedResult<RestaurantDto>>>> GetRestaurants(
         [FromQuery] string? search,
         [FromQuery] string? category,
+        [FromQuery] string? sortBy, // nearMe, bestSeller, fastest, rating
+        [FromQuery] bool? hasPromotion,
+        [FromQuery] double? latitude,
+        [FromQuery] double? longitude,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 20)
     {
@@ -39,9 +43,34 @@ public class RestaurantsController : ControllerBase
             query = query.Where(r => r.Category == category);
         }
 
+        if (hasPromotion == true)
+        {
+            query = query.Where(r => r.HasPromotion);
+        }
+
         var totalCount = await query.CountAsync();
-        var restaurants = await query
-            .OrderByDescending(r => r.Rating)
+
+        // Handle sorting
+        var restaurantsQuery = query.AsEnumerable();
+
+        if (sortBy == "nearMe" && latitude.HasValue && longitude.HasValue)
+        {
+            restaurantsQuery = restaurantsQuery.OrderBy(r => CalculateDistance(latitude.Value, longitude.Value, r.Latitude, r.Longitude));
+        }
+        else if (sortBy == "bestSeller")
+        {
+            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.TotalOrders);
+        }
+        else if (sortBy == "fastest")
+        {
+            restaurantsQuery = restaurantsQuery.OrderBy(r => r.EstimatedDeliveryMinutes);
+        }
+        else // default or rating
+        {
+            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.Rating);
+        }
+
+        var restaurants = restaurantsQuery
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .Select(r => new RestaurantDto
@@ -62,9 +91,14 @@ public class RestaurantsController : ControllerBase
                 Rating = r.Rating,
                 TotalReviews = r.TotalReviews,
                 HasPromotion = r.HasPromotion,
-                IsNew = r.IsNew
+                IsNew = r.IsNew,
+                IsTrending = r.IsTrending,
+                TotalOrders = r.TotalOrders,
+                Distance = (latitude.HasValue && longitude.HasValue) 
+                    ? CalculateDistance(latitude.Value, longitude.Value, r.Latitude, r.Longitude) 
+                    : 0
             })
-            .ToListAsync();
+            .ToList();
 
         var result = new PagedResult<RestaurantDto>
         {
@@ -226,6 +260,62 @@ public class RestaurantsController : ControllerBase
             .ToListAsync();
 
         return Ok(ApiResponse<List<PromotionDto>>.SuccessResponse(promotions));
+    }
+
+    [HttpGet("trending")]
+    public async Task<ActionResult<ApiResponse<List<RestaurantDto>>>> GetTrendingRestaurants([FromQuery] int limit = 10)
+    {
+        var restaurants = await _context.Restaurants
+            .Where(r => !r.IsDeleted && r.IsApproved)
+            .OrderByDescending(r => r.IsTrending)
+            .ThenByDescending(r => r.TotalOrders)
+            .ThenByDescending(r => r.Rating)
+            .Take(limit)
+            .Select(r => new RestaurantDto
+            {
+                Id = r.Id,
+                Name = r.Name,
+                NameSecondary = r.NameSecondary,
+                Description = r.Description,
+                ImageUrl = r.ImageUrl,
+                CoverImageUrl = r.CoverImageUrl,
+                Address = r.Address,
+                Latitude = r.Latitude,
+                Longitude = r.Longitude,
+                Category = r.Category,
+                IsOpen = r.IsOpen,
+                EstimatedDeliveryMinutes = r.EstimatedDeliveryMinutes,
+                DeliveryFee = r.DeliveryFee,
+                Rating = r.Rating,
+                TotalReviews = r.TotalReviews,
+                HasPromotion = r.HasPromotion,
+                IsNew = r.IsNew,
+                IsTrending = r.IsTrending,
+                TotalOrders = r.TotalOrders
+            })
+            .ToListAsync();
+
+        return Ok(ApiResponse<List<RestaurantDto>>.SuccessResponse(restaurants));
+    }
+
+    [HttpGet("popular-categories")]
+    public async Task<ActionResult<ApiResponse<List<FoodCategoryDto>>>> GetPopularCategories([FromQuery] int limit = 8)
+    {
+        var categories = await _context.FoodCategories
+            .Where(c => c.IsActive && !c.IsDeleted)
+            .OrderBy(c => c.DisplayOrder)
+            .Take(limit)
+            .Select(c => new FoodCategoryDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                NameSecondary = c.NameSecondary,
+                IconUrl = c.IconUrl,
+                BackgroundColor = c.BackgroundColor
+            })
+            .ToListAsync();
+
+        return Ok(ApiResponse<List<FoodCategoryDto>>.SuccessResponse(categories));
     }
 
     private static double CalculateDistance(double lat1, double lon1, double lat2, double lon2)

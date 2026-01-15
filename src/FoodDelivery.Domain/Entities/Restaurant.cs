@@ -32,6 +32,8 @@ public class Restaurant : BaseEntity
     public bool HasPromotion { get; set; } = false;
     public bool IsNew { get; set; } = false;
     public bool IsApproved { get; set; } = true; // Default true for existing restaurants
+    public bool IsTrending { get; set; } = false;
+    public int TotalOrders { get; set; } = 0;
     
     // Navigation properties
     public ICollection<MenuCategory> MenuCategories { get; set; } = new List<MenuCategory>();

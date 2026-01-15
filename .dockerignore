@@ -1,0 +1,12 @@
+**/.bin
+**/.obj
+**/.vs
+**/.vscode
+**/.git
+**/.gitignore
+**/bin
+**/obj
+Dockerfile
+docker-compose*
+node_modules
+npm-debug.log
