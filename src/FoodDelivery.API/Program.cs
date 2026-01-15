@@ -3,6 +3,10 @@ using FoodDelivery.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using dotenv.net;
+
+// Load environment variables from .env file
+DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +14,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Add DbContext with PostgreSQL
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Override with environment variables if present
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+if (!string.IsNullOrEmpty(dbHost))
+{
+    connectionString = $"Host={dbHost};Port={dbPort ?? "5432"};Database={dbName};Username={dbUser};Password={dbPassword}";
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // Add JWT Authentication
-var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "YourSuperSecretKeyHere12345678901234567890";
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? 
+                builder.Configuration["Jwt:Secret"] ?? 
+                "YourSuperSecretKeyHere12345678901234567890";
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -51,7 +72,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Food Delivery API v1");
+        c.RoutePrefix = string.Empty; // Set Swagger UI to serve at the root
+    });
 }
 
 // app.UseHttpsRedirection(); // Disabled for development
