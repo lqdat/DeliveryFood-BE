@@ -335,6 +335,9 @@ public class OrdersController : ControllerBase
             PaymentMethod = order.PaymentMethod,
             PaymentStatus = order.PaymentStatus,
             DeliveryAddress = order.DeliveryAddress,
+            DeliveryLatitude = order.DeliveryLatitude,
+            DeliveryLongitude = order.DeliveryLongitude,
+            DeliveryNote = order.DeliveryNote,
             EstimatedDeliveryMinutes = order.EstimatedDeliveryMinutes,
             Items = order.OrderItems.Select(oi => new OrderItemDto
             {
@@ -347,7 +350,12 @@ public class OrdersController : ControllerBase
                 Notes = oi.Notes
             }).ToList(),
             CreatedAt = order.CreatedAt,
-            DeliveredAt = order.DeliveredAt
+            ConfirmedAt = order.ConfirmedAt,
+            PreparedAt = order.PreparedAt,
+            PickedUpAt = order.PickedUpAt,
+            DeliveredAt = order.DeliveredAt,
+            CancelledAt = order.CancelledAt,
+            CancellationReason = order.CancellationReason
         };
     }
 

@@ -46,7 +46,7 @@ public class OrderDto
     // Restaurant
     public RestaurantSummaryDto Restaurant { get; set; } = null!;
     
-    // Driver
+    // Driver (null if not yet assigned)
     public DriverSummaryDto? Driver { get; set; }
     
     // Pricing
@@ -61,6 +61,9 @@ public class OrderDto
     
     // Delivery
     public string DeliveryAddress { get; set; } = string.Empty;
+    public double DeliveryLatitude { get; set; }
+    public double DeliveryLongitude { get; set; }
+    public string? DeliveryNote { get; set; }
     public int EstimatedDeliveryMinutes { get; set; }
     
     // Items
@@ -68,8 +71,14 @@ public class OrderDto
     
     // Timestamps
     public DateTime CreatedAt { get; set; }
+    public DateTime? ConfirmedAt { get; set; }
+    public DateTime? PreparedAt { get; set; }
+    public DateTime? PickedUpAt { get; set; }
     public DateTime? DeliveredAt { get; set; }
+    public DateTime? CancelledAt { get; set; }
+    public string? CancellationReason { get; set; }
 }
+
 
 public class OrderItemDto
 {
