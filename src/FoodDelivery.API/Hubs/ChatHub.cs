@@ -20,7 +20,7 @@ public class ChatHub : Hub
 
     private Guid? GetUserId()
     {
-        var userId = Context.User?.FindFirst("UserId")?.Value;
+        var userId = Context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         return Guid.TryParse(userId, out var id) ? id : null;
     }
 

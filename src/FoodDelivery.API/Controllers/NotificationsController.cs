@@ -28,7 +28,7 @@ public class NotificationsController : ControllerBase
 
     private Guid? GetUserId()
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value;
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         return Guid.TryParse(userIdClaim, out var userId) ? userId : null;
     }
 
