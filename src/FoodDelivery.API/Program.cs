@@ -94,6 +94,7 @@ app.MapControllers();
 
 // Map SignalR hub
 app.MapHub<FoodDelivery.API.Hubs.NotificationHub>("/hubs/notifications");
+app.MapHub<FoodDelivery.API.Hubs.ChatHub>("/hubs/chat");
 
 // Initialize database and seed data on startup (development only)
 if (app.Environment.IsDevelopment())
