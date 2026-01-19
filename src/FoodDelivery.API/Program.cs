@@ -55,6 +55,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add SignalR for real-time notifications
+builder.Services.AddSignalR();
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -69,21 +72,28 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
+// Configure the HTTP request pipeline
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Food Delivery API v1");
+    c.RoutePrefix = string.Empty; // Set Swagger UI to serve at the root
+});
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Food Delivery API v1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI to serve at the root
-    });
+    // Dev specific configs if any
 }
+
 
 // app.UseHttpsRedirection(); // Disabled for development
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Map SignalR hub
+app.MapHub<FoodDelivery.API.Hubs.NotificationHub>("/hubs/notifications");
 
 // Initialize database and seed data on startup (development only)
 if (app.Environment.IsDevelopment())

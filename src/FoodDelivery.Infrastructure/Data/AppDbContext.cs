@@ -44,6 +44,9 @@ public class AppDbContext : DbContext
     
     // Search
     public DbSet<SearchHistory> SearchHistories => Set<SearchHistory>();
+    
+    // Notifications
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

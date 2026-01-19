@@ -56,3 +56,12 @@ public enum EarningType
     Tip = 2,
     Bonus = 3
 }
+
+public enum NotificationType
+{
+    General = 1,
+    OrderUpdate = 2,
+    Promotion = 3,
+    System = 4,
+    Chat = 5
+}
